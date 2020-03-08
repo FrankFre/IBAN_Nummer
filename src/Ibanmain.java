@@ -2,69 +2,120 @@ import java.util.Arrays;
 
 public class Ibanmain {
 
-	static int[] kto1 = new int[10]; // Hilfs-array für "Nullen-auffüllen" Klassenvariable !
-	static int kto2;
+	static Long kto1[] = new Long[10];
+	static Long kto2;
 	static Long bban;
-	static int i;
-	static int zcode1, zcode2;
+	static int zcode1, zcode2, pruefz;
 
-	static int kto = 123456;
+	static Long kto = 123456L;
 	static long blz = 12345678;
-	static int zcode11;
-	static Long zcode12;
+	static final int con = 98;
+	
+	static int zcode09, modvar;
+	static Long zcode15, zcodemitte, zcoderechts, zcoderechtstemp, zcoderechts2, zcoderechts3;
 	static String laecode = "de"; 
-	
-	/* Variable für Aufg. 5 */
-	
-	static int modvar;
+		
+	static String ibannr, pruef, ktonr;
 	
 	
 
 
 	public static void main(String[] args) {
 
-		
 	
 		laecode = normalisiereLaendercode(laecode);
 		System.out.println(laecode);
 
 		normalisiereKtoNr(kto);
-		System.out.println("Integer Array: " + Arrays.toString(kto1)); // Array auslesen wg. führender Nullen
+		System.out.println("Integer Array normalisierte Kto: " + Arrays.toString(kto1)); // Array auslesen wg. führender Nullen
 
 		erstelleBbanNr();
-		System.out.println(bban);
+		System.out.println("BBAN-Nummer 18stellig:   " + bban);
 
 		generiereZahlencodes();
-		System.out.println(zcode1);
-		System.out.println(zcode2);
+		System.out.print("Zahlencode 1.Buchstabe:  " + zcode1 + ";   ");
+		System.out.println("Zahlencode 2.Buchstabe:  " + zcode2);
 		
-		
-		
+	
 		erstelleZahlencodeSchritt5();
+		System.out.println("Modulo-Wert aus gegebenen 24stelligem Bankdaten:  " + zcoderechts3);
+		
+		erstellePruefzahl();
+		System.out.println("Prüfzahl:   " + pruefz);
+		
+		erzeugeIban();
+		System.out.println("IBAN-Nummer:   " + ibannr);
+	
+	}
+	
+		
+	
+//	public static String erzeugeIban(String laenderkennung, String blz, String nummer)  {
+//		
 		
 		
+	private static void erzeugeIban() {
+						
+		ibannr = laecode + pruefz + blz;
+
+		for (int i = 0; i < 10; i++)  {
+			
+			ibannr = ibannr + kto1[i];
+			}
 		
 	}
 
+
+
+	private static void erstellePruefzahl() {
+		
+		pruefz = (int) (con % zcoderechts3);
+		
+		if (pruefz < 10) {
+	
+				pruef = pruef +'0';
+				}
+	
+		pruef = pruef + pruefz;
+				
+	}
+
+
+
+
 	private static void erstelleZahlencodeSchritt5() {
 
-		zcode11 = (int) (bban /    1000000000L);
+		zcode09 = (int) (bban / 1000000000L);		
+		System.out.println("9-stelliger Anteil:  " + zcode09);		// 9stellige Zahl
 		
-		System.out.println(zcode11);		// 9stellige Zahl
-		
-		zcode12 = bban -(zcode11 * 1000000000L);
-		
-		System.out.println(zcode12);		// 15stellige zahl
+		zcode15 = ((((kto * 100) + zcode1) * 100) + zcode2) *100;
+		System.out.println("15- stelliger Anteil mit Ländercode:  " + zcode15);		// 15stellige Zahl
 		
 		
-		modvar = (int) (zcode12 % 97);
 		
-		System.out.println(modvar);
+		modvar = (int) (zcode09 % 97);
+		System.out.println("Inhalt Mod- Variable:  " + modvar);
+			
+		zcodemitte = (zcode15 / 100000000) + (modvar * 10000000L);
+		System.out.println("Inhalt nach Addition:   " + zcodemitte);
+	
+		modvar = (int) (zcodemitte % 97);
+		System.out.println("Modulo:   " + modvar);
 		
-		zcode12 = zcode12 + (modvar * 1000000000000000L);
+
+			
+		zcoderechtstemp = zcode15 / 100000000;
+		zcoderechts = ((zcode15 - (zcoderechtstemp * 100000000)) / 10) + (modvar * 10000000);
+		System.out.println("Inhalt Coderechts:   " + zcoderechts);
 		
-		System.out.println(zcode12);
+		zcoderechts2 = (zcoderechts % 97) * 10;
+		System.out.println("Inhalt Coderechts2:   " + zcoderechts2);
 		
+		zcoderechts3 = zcoderechts2 % 97;
+		System.out.println("Inhalt Coderechts3:   " + zcoderechts3);
+	
+		
+	
 	}
 
 
@@ -76,71 +127,34 @@ public class Ibanmain {
 		zcode2 = (laecode.charAt(1) - 64 + 9);
 
 	}
-	
-	
+
 
 	private static Long erstelleBbanNr() {
-
 
 		bban = (blz * 10000000000L) + kto;
 
 		return bban;
-		
-		
-
+	
 	}
+	
 
-	private static int[] normalisiereKtoNr(int kto) { // Algorithmus zum Auffuellen mit Nullen
+	private static Long normalisiereKtoNr(Long kto) { // Algorithmus zum Auffuellen mit Nullen
 
-		int kto2 = kto;
+		kto2 = kto;
 
-		i = 9;
-
-		while (kto2 > 0) {
-
+		for (int i = 9; i >= 0; i--) {
 			kto1[i] = kto2 % 10;
-
 			kto2 = kto2 / 10;
-			i--;
-
 		}
 
-		return kto1;
+		return kto;
 
 	}
 
 	private static String normalisiereLaendercode(String laecode) {
-
 		return laecode.toUpperCase(); // Normalisierung Grossbuchstaben
 	}
+	
 
-//	public static String normalisieren(String laecode, long blz, int kto) {
-//
-//		
-//
-//
-//
-//		for (int i = 9; i <= 0; i--) { // Erzeugung der BBAN
-//
-//			temp = temp + (blza[i] * faktor);
-//			faktor = faktor * 10;
-//
-//		}
-//
-//		bban = temp + (blz * 10000000000L);
-//
-//		System.out.println(bban);
-//
-//		// Generierung der Prüfziffer
-//
-//		char c = laecode.charAt(1); // Erzeugung des Zahlencodes der Länderbuchstaben
-//		int buchst1 = ((int) (c)) - 65 + 9;
-//
-//		char d = laecode.charAt(0); // Erzeugung des Zahlencodes der Länderbuchstaben
-//		int buchst2 = ((int) (d)) - 65 + 9;
-//
-//		return laecode;
-//
-//	}
 
 }
