@@ -1,4 +1,10 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
+
+import java.util.Scanner;
+
 
 public class Ibanmain {
 
@@ -7,30 +13,57 @@ public class Ibanmain {
 	static Long bban;
 	static int zcode1, zcode2, pruefz;
 
-	static Long kto = 123456L;
-	static long blz = 12345678;
+	static Long kto = 5886432600L;
+	static long blz = 57090900;
+	static String laecode = "de"; 
 	static final int con = 98;
 	
 	static int zcode09, modvar;
 	static Long zcode15, zcodemitte, zcoderechts, zcoderechtstemp, zcoderechts2, zcoderechts3;
-	static String laecode = "de"; 
+
 		
 	static String ibannr, pruef, ktonr;
+	
+
+	
+	// initialisiere einen statischen Scanner für Eingabe der LänderCode, Blz Kto
+	static public Scanner ourScanner = new Scanner(System.in);
 	
 	
 
 
 	public static void main(String[] args) {
-
+		
+		InputStreamReader isr = new InputStreamReader(System.in);
+		BufferedReader br = new BufferedReader(isr);
+		String eingabe = null;
 	
+		
+		System.out.println("Herzlich Willkommen bei der IBAN berechnung!\n");
+
+
+		
+				System.out.println("Bitte geben Sie die BLZ ein:\n");
+				
+				try {
+					eingabe = br.readLine();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				blz = Integer.parseInt(eingabe);
+		
+
+				
+			
 		laecode = normalisiereLaendercode(laecode);
-		System.out.println(laecode);
+//		System.out.println(laecode);
 
 		normalisiereKtoNr(kto);
-		System.out.println("Integer Array normalisierte Kto: " + Arrays.toString(kto1)); // Array auslesen wg. führender Nullen
+//		System.out.println("Integer Array normalisierte Kto: " + Arrays.toString(kto1)); // Array auslesen wg. führender Nullen
 
 		erstelleBbanNr();
-		System.out.println("BBAN-Nummer 18stellig:   " + bban);
+//		System.out.println("BBAN-Nummer 18stellig:   " + bban);
 
 		generiereZahlencodes();
 		System.out.print("Zahlencode 1.Buchstabe:  " + zcode1 + ";   ");
@@ -43,8 +76,12 @@ public class Ibanmain {
 		erstellePruefzahl();
 		System.out.println("Prüfzahl:   " + pruefz);
 		
+		System.out.println();
+		
 		erzeugeIban();
 		System.out.println("IBAN-Nummer:   " + ibannr);
+		
+		ourScanner.close();
 	
 	}
 	
